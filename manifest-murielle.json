@@ -1,0 +1,19 @@
+{
+  "name": "Murielle — Mon Dukan",
+  "short_name": "Murielle Dukan",
+  "description": "Le programme Dukan de Murielle",
+  "start_url": "/dukan-moi/",
+  "scope": "/dukan-moi/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e0e10",
+  "theme_color": "#1e0e10",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
