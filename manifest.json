@@ -1,0 +1,15 @@
+{
+  "name": "Mon Régime Dukan",
+  "short_name": "Mon Dukan",
+  "start_url": "/dukan-moi/",
+  "display": "standalone",
+  "background_color": "#1a2e1a",
+  "theme_color": "#1a2e1a",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
