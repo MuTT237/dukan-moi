@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mon Dukan">
+<meta name="theme-color" content="#1a2e1a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Mon Régime Dukan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#1a2e1a;--gm:#2d5a2d;--ga:#4a9e4a;--gl:#a8d5a8;--gp:#e8f5e8;
+  --am:#e8a020;--al:#fff3d0;--co:#e05a3a;--cl:#fde8e3;
+  --bl:#2a7bbf;--bll:#ddeeff;
+  --bg:#f4f7f4;--card:#ffffff;--tx:#1a2e1a;--tm:#5a7a5a;--bd:#d0e4d0;
+  --r:16px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:15px;line-height:1.5;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+#nav{display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom);flex-shrink:0;z-index:10}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 2px 7px;border:none;background:none;cursor:pointer;gap:3px;color:var(--tm);transition:color .2s}
+.nb.active{color:var(--ga)}
+.nb svg{width:20px;height:20px}
+.nb span{font-size:9px;font-weight:500}
+.sc{display:none;animation:fi .25s ease}
+.sc.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.dhero,.hero,.phero,.rhero{background:linear-gradient(160deg,var(--gd) 0%,var(--gm) 100%);padding:50px 20px 28px;color:white;position:relative;overflow:hidden}
+.dhero::before,.hero::before,.phero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(74,158,74,.3) 0%,transparent 60%)}
+.htitle{font-family:'DM Serif Display',serif;font-size:26px;line-height:1.2;position:relative}
+.hsub{font-size:13px;opacity:.7;margin-top:4px;position:relative}
+.dnum{font-size:56px;font-family:'DM Serif Display',serif;opacity:.18;position:absolute;right:20px;top:36px}
+.dlabel{font-family:'DM Serif Display',serif;font-size:26px;position:relative}
+.dphase{font-size:13px;opacity:.75;position:relative;margin-top:4px}
+.dpbar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;margin-top:14px;position:relative}
+.dpfill{height:100%;background:var(--gl);border-radius:2px;transition:width .5s ease}
+
+.sec{padding:16px 16px 0}
+.sec:last-child{padding-bottom:20px}
+.stitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--tm);margin-bottom:10px}
+
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.ba{background:var(--al);color:#7a4800}
+.bpp{background:var(--bll);color:#154a7a}
+.bpl{background:var(--gp);color:var(--gm)}
+
+.mc{background:var(--card);border-radius:var(--rs);border:1px solid var(--bd);padding:14px;margin-bottom:8px}
+.mt{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm);margin-bottom:3px}
+.mn{font-size:15px;color:var(--tx)}
+.mtip{font-size:12px;color:var(--tm);font-style:italic;margin-top:4px}
+
+.tc{background:var(--card);border-radius:var(--r);border:1px solid var(--bd);padding:16px;margin-bottom:10px}
+.th{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tl{font-weight:500;font-size:15px}
+.tv{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ga)}
+.wdots{display:flex;gap:6px;flex-wrap:wrap}
+.wd{width:36px;height:36px;border-radius:50%;border:2px solid var(--bd);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.wd.f{background:var(--bll);border-color:var(--bl)}
+.pb{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;margin-top:8px}
+.pf{height:100%;border-radius:4px;transition:width .4s ease}
+.pw{background:var(--bl)}.pwk{background:var(--ga)}.pbr{background:var(--am)}
+.wb{width:100%;padding:12px;border-radius:var(--rs);border:2px solid var(--bd);background:none;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;color:var(--tx)}
+.wb.done{background:var(--gp);border-color:var(--ga);color:var(--gm)}
+.bran-btn{width:100%;padding:12px;border-radius:var(--rs);border:2px solid var(--bd);background:none;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tx);transition:all .2s}
+.bran-btn.done{background:#fff8e8;border-color:var(--am);color:#7a4800}
+
+.dnav{display:flex;align-items:center;gap:8px;padding:12px 16px 0}
+.dnb{width:36px;height:36px;border-radius:50%;border:1px solid var(--bd);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--tx);flex-shrink:0}
+.dnb:disabled{opacity:.3;cursor:default}
+.dndots{display:flex;gap:5px;flex:1;justify-content:center}
+.dd{width:6px;height:6px;border-radius:50%;background:var(--bd);transition:all .2s;cursor:pointer}
+.dd.active{background:var(--ga);width:18px;border-radius:3px}
+
+.wtabs{display:flex;padding:12px 16px;gap:8px;overflow-x:auto;scrollbar-width:none}
+.wtabs::-webkit-scrollbar{display:none}
+.wt{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1px solid var(--bd);background:none;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tm)}
+.wt.active{background:var(--gd);color:white;border-color:var(--gd)}
+.dr{background:var(--card);border-radius:var(--rs);border:1px solid var(--bd);padding:14px;margin-bottom:8px}
+.drh{display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:4px}
+.drn{font-weight:500}
+.ddm{font-size:12px;color:var(--tm);margin-top:2px}
+.ddet{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.ddet.open{display:block}
+.mm{display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bd)}
+.mm:last-of-type{border-bottom:none}
+.mmt{color:var(--tm);min-width:80px;flex-shrink:0}
+
+.cath{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:13px;font-weight:500;color:var(--tm);text-transform:uppercase;letter-spacing:.06em}
+.cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ci{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--card);border-bottom:1px solid var(--bd);cursor:pointer}
+.ci:first-of-type{border-top:1px solid var(--bd)}
+.cck{width:22px;height:22px;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:12px;color:transparent}
+.ci.checked .cck{background:var(--ga);border-color:var(--ga);color:white}
+.ci.checked .cname{color:var(--tm);text-decoration:line-through}
+.cname{flex:1;font-size:14px}.cqty{font-size:12px;color:var(--tm)}
+.cact{padding:16px;display:flex;gap:8px}
+.bto{flex:1;padding:12px;border-radius:var(--rs);border:1px solid var(--bd);background:none;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tx)}
+.cco{font-size:13px;color:var(--tm);padding:0 16px 8px}
+
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:16px 16px 0}
+.psc{background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center}
+.psv{font-family:'DM Serif Display',serif;font-size:21px;color:var(--ga)}
+.psl{font-size:11px;color:var(--tm);margin-top:2px}
+.psd{font-size:11px;font-weight:500;margin-top:2px}
+.psd.g{color:var(--ga)}.psd.b{color:var(--co)}
+.gbar{padding:12px 16px 0}
+.gbc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px}
+.gbtt{font-size:13px;color:var(--tm);margin-bottom:8px}
+.gbt{height:14px;background:var(--bd);border-radius:7px;overflow:hidden;margin-bottom:6px}
+.gbf{height:100%;background:linear-gradient(90deg,var(--gm),var(--ga));border-radius:7px;transition:width .8s ease}
+.gbl{display:flex;justify-content:space-between;font-size:12px;color:var(--tm)}
+.cwrap{padding:12px 16px 0}
+.cbox{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;overflow:hidden}
+.wform{padding:12px 16px 0}
+.wfc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px}
+.wft{font-weight:500;font-size:15px;margin-bottom:12px}
+.irow{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.ig{flex:1;min-width:80px}
+.ig label{font-size:11px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+.ig input{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--bg);outline:none}
+.ig input:focus{border-color:var(--ga)}
+.btp{padding:10px 20px;border-radius:var(--rs);border:none;background:var(--gd);color:white;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0}
+.setup-card{background:var(--card);border:2px solid var(--al);border-radius:var(--r);padding:16px;margin:16px 16px 0}
+.setup-title{font-weight:500;font-size:15px;margin-bottom:12px;color:var(--am)}
+.hist{padding:0 16px 20px}
+.hitem{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:6px}
+.hidate{font-size:13px;color:var(--tm)}
+.hiw{font-family:'DM Serif Display',serif;font-size:18px}
+.hid{font-size:12px;font-weight:500}
+.hid.g{color:var(--ga)}.hid.b{color:var(--co)}
+.hidel{background:none;border:none;color:var(--tm);font-size:18px;cursor:pointer;padding:4px 6px}
+
+.rg{padding:0 16px;margin-bottom:16px}
+.rgt{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm);padding:14px 0 8px}
+.ri{display:flex;gap:10px;padding:12px 14px;background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:6px;align-items:flex-start}
+.ric{font-size:18px;flex-shrink:0;margin-top:1px}
+.rit{font-size:13px}.ritn{font-weight:500;margin-bottom:2px}.ritd{font-size:12px;color:var(--tm)}
+.remc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.remr{display:flex;justify-content:space-between;align-items:center}
+.reml{font-weight:500;font-size:14px}.rems{font-size:12px;color:var(--tm);margin-top:2px}
+.tog{width:44px;height:26px;border-radius:13px;background:var(--bd);position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+.tog.on{background:var(--ga)}
+.tog::after{content:'';position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tog.on::after{transform:translateX(18px)}
+.tin{padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--bg);margin-top:10px;display:block}
+
+.notif-banner{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);background:var(--gd);color:white;padding:14px 20px;border-radius:0 0 var(--r) var(--r);font-size:14px;z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:400px;width:92%;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.notif-banner.show{transform:translateX(-50%) translateY(0)}
+.enc-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--gd);color:white;padding:16px 20px;border-radius:var(--r);font-size:14px;z-index:200;transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:340px;width:90%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3);line-height:1.5}
+.enc-toast.show{transform:translateX(-50%) translateY(0)}
+.ibar{background:var(--gd);color:white;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px}
+.ibar button{margin-left:auto;background:var(--ga);color:white;border:none;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ibar.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="notif-banner" id="notif-banner">💧 Rappel</div>
+<div class="enc-toast" id="enc-toast"></div>
+
+<div id="app">
+  <div class="ibar hidden" id="ibar">
+    <span>📱 Installer l'app sur ton téléphone</span>
+    <button onclick="installApp()">Installer</button>
+  </div>
+
+  <div id="screen">
+
+    <!-- ══ TODAY ══ -->
+    <div id="sc-today" class="sc active">
+      <div class="dhero">
+        <div class="dnum" id="dnum">1</div>
+        <div class="dlabel" id="dlabel">Jour 1 — Lundi</div>
+        <div class="dphase" id="dphase">Phase Attaque · Protéines pures</div>
+        <div class="dpbar"><div class="dpfill" id="dpfill" style="width:7%"></div></div>
+      </div>
+      <div class="dnav">
+        <button class="dnb" id="bprev" onclick="changeDay(-1)">‹</button>
+        <div class="dndots" id="ddots"></div>
+        <button class="dnb" id="bnext" onclick="changeDay(1)">›</button>
+      </div>
+
+      <div class="sec">
+        <div class="stitle">Repas du jour</div>
+        <div class="mc">
+          <div class="mt">🌅 Petit-déjeuner</div>
+          <div class="mn" id="mbf">—</div>
+          <div class="mtip" id="mbf-tip"></div>
+        </div>
+        <div class="mc">
+          <div class="mt">☀️ Déjeuner</div>
+          <div class="mn" id="mlu">—</div>
+          <div class="mtip" id="mlu-tip"></div>
+        </div>
+        <div class="mc">
+          <div class="mt">🌙 Dîner</div>
+          <div class="mn" id="mdi">—</div>
+          <div class="mtip" id="mdi-tip"></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="stitle">Objectifs du jour</div>
+        <div class="tc">
+          <div class="th">
+            <div><div class="tl">💧 Eau</div><div style="font-size:12px;color:var(--tm)">Cible : 1,5 L / jour</div></div>
+            <div class="tv" id="wval">0 / 8</div>
+          </div>
+          <div class="wdots" id="wdots"></div>
+          <div class="pb" style="margin-top:10px"><div class="pf pw" id="wbar" style="width:0%"></div></div>
+        </div>
+        <div class="tc">
+          <div class="th">
+            <div><div class="tl">🚶 Marche</div><div style="font-size:12px;color:var(--tm)">Objectif : 20 min / jour</div></div>
+            <div class="tv" id="wkval">—</div>
+          </div>
+          <button class="wb" id="wkbtn" onclick="toggleWalk()">Marquer comme fait</button>
+          <div class="pb" style="margin-top:10px"><div class="pf pwk" id="wkbar" style="width:0%"></div></div>
+        </div>
+        <div class="tc">
+          <div class="th">
+            <div><div class="tl">🌾 Son d'avoine</div><div style="font-size:12px;color:var(--tm)">1,5 cs / jour — obligatoire</div></div>
+            <div class="tv" id="branval">—</div>
+          </div>
+          <button class="bran-btn" id="branbtn" onclick="toggleBran()">Marquer comme pris</button>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- ══ PLANNING ══ -->
+    <div id="sc-planning" class="sc">
+      <div class="hero">
+        <div class="htitle" style="position:relative">Planning complet</div>
+        <div class="hsub" style="position:relative">2 semaines · 14 jours</div>
+      </div>
+      <div class="wtabs">
+        <button class="wt active" onclick="showWeek(1,this)">Semaine 1</button>
+        <button class="wt" onclick="showWeek(2,this)">Semaine 2</button>
+      </div>
+      <div style="padding:0 16px 20px" id="plist"></div>
+    </div>
+
+    <!-- ══ COURSES ══ -->
+    <div id="sc-courses" class="sc">
+      <div class="hero">
+        <div class="htitle" style="position:relative">Liste de courses</div>
+        <div class="hsub" style="position:relative">2 semaines complètes</div>
+      </div>
+      <div class="cact">
+        <button class="bto" onclick="resetCourses()">Tout décocher</button>
+        <button class="bto" onclick="checkAllCourses()">Tout cocher</button>
+      </div>
+      <div class="cco" id="cco"></div>
+      <div id="clist"></div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- ══ PROGRESSION ══ -->
+    <div id="sc-prog" class="sc">
+      <div class="phero">
+        <div class="htitle">Ma progression</div>
+        <div class="hsub" id="phsub">Suis ta courbe de poids</div>
+      </div>
+      <div id="setup-block" class="setup-card" style="display:none">
+        <div class="setup-title">⚙️ Paramètres de départ</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:8px">
+            <div class="ig"><label>Poids de départ (kg)</label><input type="number" id="in-start" placeholder="ex: 72" step="0.1"></div>
+            <div class="ig"><label>Poids cible (kg)</label><input type="number" id="in-target" placeholder="ex: 60" step="0.1"></div>
+          </div>
+          <button class="btp" style="width:100%" onclick="saveSetup()">Commencer le suivi</button>
+        </div>
+      </div>
+      <div id="pstats" class="pstats" style="display:none">
+        <div class="psc"><div class="psv" id="sv-cur">—</div><div class="psl">Actuel</div><div class="psd" id="sv-delta">—</div></div>
+        <div class="psc"><div class="psv" id="sv-lost">—</div><div class="psl">Perdu</div></div>
+        <div class="psc"><div class="psv" id="sv-rem">—</div><div class="psl">Restant</div></div>
+      </div>
+      <div id="gbar" class="gbar" style="display:none">
+        <div class="gbc">
+          <div class="gbtt">Progression vers l'objectif</div>
+          <div class="gbt"><div class="gbf" id="gbf" style="width:0%"></div></div>
+          <div class="gbl"><span id="gl-start">—</span><span id="gl-pct" style="font-weight:500;color:var(--ga)">0%</span><span id="gl-target">—</span></div>
+        </div>
+      </div>
+      <div id="cwrap" class="cwrap" style="display:none">
+        <div class="cbox"><canvas id="wChart" style="width:100%;height:180px;display:block"></canvas></div>
+      </div>
+      <div id="wform" class="wform" style="display:none">
+        <div class="wfc">
+          <div class="wft">📝 Nouvelle pesée</div>
+          <div class="irow">
+            <div class="ig"><label>Date</label><input type="date" id="in-date"></div>
+            <div class="ig" style="max-width:110px"><label>Poids (kg)</label><input type="number" id="in-w" placeholder="68.0" step="0.1"></div>
+            <button class="btp" onclick="addWeight()">Ajouter</button>
+          </div>
+        </div>
+      </div>
+      <div id="msetup" class="wform" style="display:none">
+        <div class="wfc">
+          <div class="wft">⚙️ Modifier les objectifs</div>
+          <div class="irow">
+            <div class="ig"><label>Départ (kg)</label><input type="number" id="ms-start" step="0.1"></div>
+            <div class="ig"><label>Cible (kg)</label><input type="number" id="ms-target" step="0.1"></div>
+            <button class="btp" onclick="updateSetup()">OK</button>
+          </div>
+        </div>
+      </div>
+      <div id="htitle" class="sec" style="display:none"><div class="stitle">Historique des pesées</div></div>
+      <div class="hist" id="hist"></div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- ══ RÈGLES ══ -->
+    <div id="sc-regles" class="sc">
+      <div class="rhero" style="background:linear-gradient(135deg,var(--gd) 0%,#3a5a2a 100%)">
+        <div style="font-family:'DM Serif Display',serif;font-size:26px">Règles Dukan</div>
+        <div style="font-size:13px;opacity:.7;margin-top:6px">Piliers et rappels quotidiens</div>
+      </div>
+
+      <div class="rg">
+        <div class="rgt">Rappels quotidiens</div>
+        <div class="remc">
+          <div class="remr"><div><div class="reml">💧 Eau — boire 1,5 L</div><div class="rems">Rappel hydratation</div></div><button class="tog" id="tog-water" onclick="toggleRem('water')"></button></div>
+          <input type="time" class="tin" id="t-water" value="10:00" onchange="saveRems()">
+        </div>
+        <div class="remc">
+          <div class="remr"><div><div class="reml">🚶 Marche 20 min</div><div class="rems">Ta session quotidienne</div></div><button class="tog" id="tog-walk" onclick="toggleRem('walk')"></button></div>
+          <input type="time" class="tin" id="t-walk" value="17:00" onchange="saveRems()">
+        </div>
+        <div class="remc">
+          <div class="remr"><div><div class="reml">⚖️ Pesée matinale</div><div class="rems">À jeun, chaque matin</div></div><button class="tog" id="tog-weigh" onclick="toggleRem('weigh')"></button></div>
+          <input type="time" class="tin" id="t-weigh" value="07:30" onchange="saveRems()">
+        </div>
+        <div class="remc">
+          <div class="remr"><div><div class="reml">🌾 Son d'avoine</div><div class="rems">1,5 cs par jour</div></div><button class="tog" id="tog-bran" onclick="toggleRem('bran')"></button></div>
+          <input type="time" class="tin" id="t-bran" value="08:00" onchange="saveRems()">
+        </div>
+      </div>
+
+      <div class="rg">
+        <div class="rgt">Chaque jour — obligatoire</div>
+        <div class="ri"><div class="ric">💧</div><div class="rit"><div class="ritn">1,5 L d'eau minimum</div><div class="ritd">Eau plate, thé ou café sans sucre. Indispensable pour éliminer les toxines.</div></div></div>
+        <div class="ri"><div class="ric">🌾</div><div class="rit"><div class="ritn">1,5 cs de son d'avoine</div><div class="ritd">Galette, dans le yaourt ou le fromage blanc. Transit + coupe-faim.</div></div></div>
+        <div class="ri"><div class="ric">🚶</div><div class="rit"><div class="ritn">20 minutes de marche</div><div class="ritd">Marche active — booste le métabolisme et réduit la rétention d'eau.</div></div></div>
+      </div>
+      <div class="rg">
+        <div class="rgt">Aliments autorisés — PP (protéines pures)</div>
+        <div class="ri"><div class="ric">🍗</div><div class="rit"><div class="ritn">Viandes maigres</div><div class="ritd">Poulet, dinde, veau, bœuf maigre. À volonté, sans matière grasse.</div></div></div>
+        <div class="ri"><div class="ric">🐟</div><div class="rit"><div class="ritn">Poissons & fruits de mer</div><div class="ritd">Tous les poissons, crevettes, moules, calamars...</div></div></div>
+        <div class="ri"><div class="ric">🥚</div><div class="rit"><div class="ritn">Œufs</div><div class="ritd">À volonté en blanc. Limiter les jaunes à 3-4/semaine.</div></div></div>
+        <div class="ri"><div class="ric">🥛</div><div class="rit"><div class="ritn">Laitages 0%</div><div class="ritd">Yaourt, fromage blanc, lait écrémé — 0% uniquement.</div></div></div>
+      </div>
+      <div class="rg">
+        <div class="rgt">Jours PL — légumes autorisés en plus</div>
+        <div class="ri"><div class="ric">🥦</div><div class="rit"><div class="ritn">Tous les légumes sans féculents</div><div class="ritd">Courgette, haricots verts, brocoli, épinards, poireau, salade, tomate, concombre, champignons...</div></div></div>
+      </div>
+      <div class="rg">
+        <div class="rgt">Strictement interdit</div>
+        <div class="ri"><div class="ric">🚫</div><div class="rit"><div class="ritn">Matières grasses</div><div class="ritd">Huile, beurre, margarine, crème. Cuisson à sec ou vapeur uniquement.</div></div></div>
+        <div class="ri"><div class="ric">🚫</div><div class="rit"><div class="ritn">Sucre & féculents</div><div class="ritd">Sucre, miel, pain, pâtes, riz, pommes de terre, fruits.</div></div></div>
+        <div class="ri"><div class="ric">🚫</div><div class="rit"><div class="ritn">Alcool</div><div class="ritd">Interdit en phases Attaque et Croisière.</div></div></div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+  </div>
+
+  <nav id="nav">
+    <button class="nb active" onclick="showSc('today',this)" id="nb-today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span>Aujourd'hui</span>
+    </button>
+    <button class="nb" onclick="showSc('planning',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Planning</span>
+    </button>
+    <button class="nb" onclick="showSc('courses',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span>Courses</span>
+    </button>
+    <button class="nb" onclick="showSc('prog',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Poids</span>
+    </button>
+    <button class="nb" onclick="showSc('regles',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      <span>Règles</span>
+    </button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════
+// PROGRAMME — MOI (sans contrainte cantine)
+// 4 jours Attaque + 10 jours Croisière
+// Petit-déjeuner complet, déjeuner maison, dîner maison
+// Rapide : moins de 20 min partout
+// ══════════════════════════════════════════
+const DAYS = [
+  // ─── SEMAINE 1 ───
+  {
+    day:'Lundi', phase:'Attaque PP', label:'Phase Attaque · Protéines pures', badge:'ba',
+    bf:'Yaourt 0% + 1,5 cs son d\'avoine + café sans sucre', bfTip:'Mélange le son d\'avoine dans le yaourt — onctueux et rassasiant.',
+    lu:'Thon en boîte + 2 œufs durs + fromage blanc 0%', luTip:'⏱ 5 min. Le déjeuner le plus rapide du programme !',
+    di:'Pavé de saumon poêlé + omelette aux fines herbes', diTip:'⏱ 15 min. Poêle antiadhésive, sans matière grasse. Sel, poivre, ciboulette.'
+  },
+  {
+    day:'Mardi', phase:'Attaque PP', label:'Phase Attaque · Protéines pures', badge:'ba',
+    bf:'Omelette 2 œufs + café / thé sans sucre', bfTip:'⏱ 5 min. Ajoute des herbes de Provence pour varier.',
+    lu:'Blanc de poulet grillé + fromage blanc 0%', luTip:'⏱ 10 min. Poulet tranché finement = cuisson express 5 min de chaque côté.',
+    di:'Escalope de dinde + bouillon de légumes dégraissé', diTip:'⏱ 15 min. Escalope 4 min/face. Bouillon cube dégraissé en accompagnement chaud.'
+  },
+  {
+    day:'Mercredi', phase:'Attaque PP', label:'Phase Attaque · Protéines pures', badge:'ba',
+    bf:'Fromage blanc 0% + 1,5 cs son d\'avoine + café', bfTip:'Ajoute une pincée de cannelle dans le fromage blanc — saveur douce sans sucre.',
+    lu:'Crevettes sautées à l\'ail + yaourt 0%', luTip:'⏱ 10 min. Crevettes déjà cuites : juste 3 min à la poêle avec ail en poudre.',
+    di:'Filet de cabillaud vapeur + œufs brouillés', diTip:'⏱ 15 min. Cabillaud au micro-ondes 6 min. Œufs brouillés 3 min à feu doux.'
+  },
+  {
+    day:'Jeudi', phase:'Attaque PP', label:'Phase Attaque · Protéines pures', badge:'ba',
+    bf:'2 œufs à la coque + yaourt 0% + café', bfTip:'⏱ 5 min. Œufs dans eau bouillante 4 min exactement. Mouillettes ? Zéro pain — mange avec une cuillère !',
+    lu:'Thon + fromage blanc 0% + surimi', luTip:'⏱ 5 min. Repas froid ultra-rapide. Assaisonne avec moutarde sans sucre.',
+    di:'Blanc de poulet rôti + omelette nature', diTip:'⏱ 20 min. Poulet au four 200° pendant 18 min. Prépares-en plusieurs pour la semaine !'
+  },
+  {
+    day:'Vendredi', phase:'Croisière PL', label:'Croisière · Protéines + Légumes', badge:'bpl',
+    bf:'Yaourt 0% + son d\'avoine + café — journée PL !', bfTip:'Aujourd\'hui tu peux manger des légumes à chaque repas. Profites-en !',
+    lu:'Filet de poulet + haricots verts vapeur + salade verte', luTip:'⏱ 15 min. Haricots verts surgelés : 5 min micro-ondes. Salade : vinaigrette citron pur.',
+    di:'Saumon en papillote + courgettes + poireaux', diTip:'⏱ 20 min. Papillote au four 180° ou 7 min micro-ondes. Légumes surgelés = aucune corvée épluchage.'
+  },
+  {
+    day:'Samedi', phase:'Croisière PP', label:'Croisière · Protéines pures', badge:'bpp',
+    bf:'Omelette 3 œufs + café — bon week-end !', bfTip:'Week-end : prends le temps. Ajoute saumon fumé dans l\'omelette pour changer.',
+    lu:'Steak haché 5% MG + fromage blanc 0%', luTip:'⏱ 10 min. Steak haché à sec à la poêle. Assaisonne avec herbes de Provence.',
+    di:'Crevettes wok + champignons + bouillon', diTip:'⏱ 15 min. Tout à la poêle : champignons 5 min, crevettes 3 min. Déglace au bouillon.'
+  },
+  {
+    day:'Dimanche', phase:'Croisière PL', label:'Croisière · Protéines + Légumes', badge:'bpl',
+    bf:'Fromage blanc 0% + son d\'avoine + œuf dur + café', bfTip:'Dimanche = brunch Dukan ! Prends le temps de bien manger.',
+    lu:'Pavé de saumon + épinards sautés + tomates cerises', luTip:'⏱ 15 min. Épinards surgelés décongelés à la poêle 5 min. Tomates crues en accompagnement.',
+    di:'Dos de cabillaud + ratatouille express (courgettes/tomates)', diTip:'⏱ 20 min. Ratatouille : courgette + tomate + herbes de Provence à la poêle 15 min.'
+  },
+  // ─── SEMAINE 2 ───
+  {
+    day:'Lundi', phase:'Croisière PP', label:'Croisière · Protéines pures', badge:'bpp',
+    bf:'Yaourt 0% + 1,5 cs son d\'avoine + café', bfTip:'Nouvelle semaine, nouvelle motivation ! Tu as passé la première semaine — chapeau !',
+    lu:'Blanc de poulet + œufs durs + yaourt 0%', luTip:'⏱ 10 min. Poulet préparé en avance dimanche = réchauffage 3 min.',
+    di:'Escalope de dinde poêlée + omelette aux champignons', diTip:'⏱ 20 min. Champignons sautés 5 min, omelette 3 min. Rapide et savoureux.'
+  },
+  {
+    day:'Mardi', phase:'Croisière PL', label:'Croisière · Protéines + Légumes', badge:'bpl',
+    bf:'Omelette aux épinards + café', bfTip:'⏱ 8 min. Épinards surgelés décongelés 2 min, puis ajoutés aux œufs battus.',
+    lu:'Thon + salade composée (tomates, concombre, radis)', luTip:'⏱ 5 min. Vinaigrette : vinaigre + moutarde sans sucre + herbes. Zéro huile !',
+    di:'Filet de saumon teriyaki maison + brocolis vapeur', diTip:'⏱ 15 min. Marinade : sauce soja allégée + ail + gingembre. Poêle 8 min. Brocolis : 5 min micro-ondes.'
+  },
+  {
+    day:'Mercredi', phase:'Croisière PP', label:'Croisière · Protéines pures', badge:'bpp',
+    bf:'Fromage blanc 0% + son d\'avoine + café', bfTip:'Mi-programme ! Regarde ta courbe de poids — les résultats sont là.',
+    lu:'Crevettes + fromage blanc 0% + surimi', luTip:'⏱ 5 min. Repas froid express. Crevettes froides + sauce moutarde sans sucre.',
+    di:'Blanc de poulet citron-herbes + œufs à la coque', diTip:'⏱ 18 min. Poulet au four avec jus de citron + thym. Œufs à la coque en accompagnement.'
+  },
+  {
+    day:'Jeudi', phase:'Croisière PL', label:'Croisière · Protéines + Légumes', badge:'bpl',
+    bf:'Yaourt 0% + son d\'avoine + café — jour PL !', bfTip:'Profite des légumes aujourd\'hui — ça change les saveurs et apporte des fibres.',
+    lu:'Filet de dinde + poêlée de courgettes + champignons', luTip:'⏱ 20 min. Tout en une seule poêle : dinde 4 min/face, légumes autour 10 min.',
+    di:'Cabillaud en croûte d\'herbes + haricots verts + poireaux', diTip:'⏱ 20 min. Parsème le cabillaud d\'herbes de Provence + moutarde. Four 180° = 15 min.'
+  },
+  {
+    day:'Vendredi', phase:'Croisière PP', label:'Croisière · Protéines pures', badge:'bpp',
+    bf:'Omelette 2 œufs + café — dernier vendredi !', bfTip:'Plus que 3 jours ! La ligne droite finale — tiens bon.',
+    lu:'Thon + œufs durs + fromage blanc 0%', luTip:'⏱ 5 min. Le classique qui ne faillit jamais. Ajoute de la moutarde sans sucre.',
+    di:'Pavé de bœuf 5% + omelette aux fines herbes', diTip:'⏱ 15 min. Bœuf haché façon burger sans pain. Omelette en accompagnement — festif et Dukan !'
+  },
+  {
+    day:'Samedi', phase:'Croisière PL', label:'Croisière · Protéines + Légumes', badge:'bpl',
+    bf:'Fromage blanc 0% + son d\'avoine + œuf dur + café', bfTip:'Avant-dernier jour — pèse-toi ce matin pour voir ta progression globale !',
+    lu:'Saumon + salade de tomates-concombre + yaourt 0%', luTip:'⏱ 15 min. Saumon poché 8 min. Salade fraîche avec citron et herbes.',
+    di:'Poulet rôti maison + ratatouille courgettes-tomates', diTip:'⏱ 25 min. Blanc de poulet entier au four 200° = 22 min. Ratatouille en parallèle à la poêle.'
+  },
+  {
+    day:'Dimanche', phase:'Croisière PP', label:'Croisière · Protéines pures', badge:'bpp',
+    bf:'Yaourt 0% + son d\'avoine + café — dernier jour !', bfTip:'🎉 Dernier jour du programme ! Tu as tenu 14 jours — félicitations !',
+    lu:'Crevettes sautées + fromage blanc + surimi', luTip:'⏱ 10 min. Repas de champion(ne) pour finir en beauté !',
+    di:'Saumon poêlé + omelette festive aux fines herbes', diTip:'⏱ 15 min. Le repas final — saveure chaque bouchée, tu l\'as mérité !'
+  },
+];
+
+const COURSES = [
+  {cat:'🥛 Laitages 0% — base quotidienne', color:'#BA7517', items:[
+    {n:'Yaourts nature 0%', q:'2 × 12 packs'},
+    {n:'Fromage blanc 0% (grands pots)', q:'3 kg'},
+    {n:'Lait écrémé', q:'1 L'},
+  ]},
+  {cat:'🥚 Œufs & son d\'avoine', color:'#D4537E', items:[
+    {n:'Œufs', q:'3 douzaines'},
+    {n:'Son d\'avoine', q:'500 g'},
+  ]},
+  {cat:'🍗 Viandes maigres', color:'#378ADD', items:[
+    {n:'Blanc de poulet', q:'1,2 kg'},
+    {n:'Escalope de dinde', q:'800 g'},
+    {n:'Steak haché 5% MG', q:'4 steaks'},
+    {n:'Escalope de veau', q:'400 g'},
+  ]},
+  {cat:'🐟 Poissons & fruits de mer', color:'#1D9E75', items:[
+    {n:'Pavés de saumon', q:'4 pavés'},
+    {n:'Dos de cabillaud surgelé', q:'600 g'},
+    {n:'Crevettes cuites', q:'600 g'},
+    {n:'Thon en boîte (eau)', q:'6 boîtes'},
+    {n:'Surimi (barres)', q:'2 paquets'},
+  ]},
+  {cat:'🥦 Légumes (jours PL)', color:'#4a9e4a', items:[
+    {n:'Haricots verts surgelés', q:'1 kg'},
+    {n:'Brocolis surgelés', q:'600 g'},
+    {n:'Courgettes', q:'4 pièces'},
+    {n:'Épinards surgelés', q:'600 g'},
+    {n:'Poireaux', q:'3 pièces'},
+    {n:'Champignons de Paris', q:'500 g'},
+    {n:'Tomates', q:'1 kg'},
+    {n:'Concombres', q:'2 pièces'},
+    {n:'Salade verte sachet', q:'2 sachets'},
+    {n:'Radis', q:'1 botte'},
+  ]},
+  {cat:'🧂 Condiments & arômes', color:'#888780', items:[
+    {n:'Moutarde sans sucre', q:'1 pot'},
+    {n:'Sauce soja allégée', q:'1 bouteille'},
+    {n:'Vinaigre', q:'1 bouteille'},
+    {n:'Ail en poudre', q:'1 flacon'},
+    {n:'Herbes de Provence', q:'1 flacon'},
+    {n:'Ciboulette / fines herbes', q:'1 bouquet'},
+    {n:'Bouillon cube dégraissé', q:'1 boîte'},
+    {n:'Citrons', q:'4 pièces'},
+    {n:'Gingembre en poudre', q:'1 flacon'},
+  ]},
+];
+
+// ═══════════ STATE ═══════════
+let curDay=0, wChart=null, S={};
+function load(){
+  try{S=JSON.parse(localStorage.getItem('dukan_moi')||'{}');}catch(e){S={};}
+  S.water=S.water||{}; S.walk=S.walk||{}; S.bran=S.bran||{};
+  S.courses=S.courses||{}; S.weights=S.weights||[];
+  S.rems=S.rems||{water:false,walk:false,weigh:false,bran:false};
+  S.remT=S.remT||{water:'10:00',walk:'17:00',weigh:'07:30',bran:'08:00'};
+}
+function save(){localStorage.setItem('dukan_moi',JSON.stringify(S));}
+
+// ═══════════ SCREENS ═══════════
+function showSc(name,btn){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sc-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('screen').scrollTop=0;
+  if(name==='today')renderToday();
+  if(name==='planning')renderPlanning(1);
+  if(name==='courses')renderCourses();
+  if(name==='prog')renderProg();
+  if(name==='regles')renderRemsUI();
+}
+
+// ═══════════ TODAY ═══════════
+function changeDay(d){curDay=Math.max(0,Math.min(13,curDay+d));renderToday();}
+function renderToday(){
+  const d=DAYS[curDay];
+  document.getElementById('dnum').textContent=curDay+1;
+  document.getElementById('dlabel').textContent=`Jour ${curDay+1} — ${d.day}`;
+  document.getElementById('dphase').textContent=d.label;
+  document.getElementById('dpfill').style.width=((curDay+1)/14*100)+'%';
+  document.getElementById('mbf').textContent=d.bf;
+  document.getElementById('mbf-tip').textContent=d.bfTip||'';
+  document.getElementById('mlu').textContent=d.lu;
+  document.getElementById('mlu-tip').textContent=d.luTip||'';
+  document.getElementById('mdi').textContent=d.di;
+  document.getElementById('mdi-tip').textContent=d.diTip||'';
+  document.getElementById('bprev').disabled=curDay===0;
+  document.getElementById('bnext').disabled=curDay===13;
+  const dc=document.getElementById('ddots'); dc.innerHTML='';
+  for(let i=0;i<14;i++){
+    const dot=document.createElement('div');
+    dot.className='dd'+(i===curDay?' active':'');
+    dot.onclick=((x)=>()=>{curDay=x;renderToday();})(i);
+    dc.appendChild(dot);
+  }
+  renderWater(); renderWalk(); renderBran();
+}
+function renderWater(){
+  const k='d'+curDay, w=S.water[k]||0;
+  const c=document.getElementById('wdots'); c.innerHTML='';
+  for(let i=0;i<8;i++){
+    const b=document.createElement('button');
+    b.className='wd'+(i<w?' f':''); b.innerHTML='💧';
+    b.onclick=()=>setWater(i<w?i:i+1); c.appendChild(b);
+  }
+  document.getElementById('wval').textContent=w+' / 8';
+  document.getElementById('wbar').style.width=(w/8*100)+'%';
+}
+function setWater(n){
+  S.water['d'+curDay]=n; save(); renderWater();
+  if(n===8)showNotif('🎉 Objectif 1,5 L atteint — excellent !');
+  else if(n===4)showNotif('💧 Mi-chemin ! Plus que 4 verres !');
+}
+function renderWalk(){
+  const done=S.walk['d'+curDay]||false;
+  const b=document.getElementById('wkbtn');
+  b.className='wb'+(done?' done':'');
+  b.textContent=done?'✓ Marche effectuée !':'Marquer comme fait';
+  document.getElementById('wkval').textContent=done?'✓ 20 min':'0 min';
+  document.getElementById('wkbar').style.width=done?'100%':'0%';
+}
+function toggleWalk(){
+  S.walk['d'+curDay]=!S.walk['d'+curDay]; save(); renderWalk();
+  if(S.walk['d'+curDay])showEnc('🚶 Marche validée !','Ton métabolisme te remercie — chaque pas compte !');
+}
+function renderBran(){
+  const done=S.bran['d'+curDay]||false;
+  const b=document.getElementById('branbtn');
+  b.className='bran-btn'+(done?' done':'');
+  b.textContent=done?'✓ Son d\'avoine pris !':'Marquer comme pris';
+  document.getElementById('branval').textContent=done?'✓ Fait':'À faire';
+}
+function toggleBran(){
+  S.bran['d'+curDay]=!S.bran['d'+curDay]; save(); renderBran();
+  if(S.bran['d'+curDay])showNotif('🌾 Son d\'avoine coché — parfait !');
+}
+
+// ═══════════ PLANNING ═══════════
+function renderPlanning(wk){
+  const l=document.getElementById('plist'); l.innerHTML='';
+  const s=(wk-1)*7;
+  for(let i=s;i<s+7;i++){
+    const d=DAYS[i];
+    const el=document.createElement('div'); el.className='dr';
+    el.innerHTML=`
+      <div class="drh" onclick="tpd(${i})">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span class="drn">Jour ${i+1} · ${d.day}</span>
+            <span class="badge ${d.badge}" style="margin:0">${d.phase}</span>
+          </div>
+          <div class="ddm">Soir : ${d.di.substring(0,38)}…</div>
+        </div>
+        <span style="font-size:20px;color:var(--tm)">›</span>
+      </div>
+      <div class="ddet" id="pd-${i}">
+        <div class="mm"><span class="mmt">🌅 Petit-déj</span><span>${d.bf}</span></div>
+        <div class="mm"><span class="mmt">☀️ Déjeuner</span><span>${d.lu}</span></div>
+        <div class="mm"><span class="mmt">🌙 Dîner</span><span>${d.di}</span></div>
+        <button onclick="goDay(${i})" style="margin-top:10px;width:100%;padding:9px;border-radius:8px;border:1px solid var(--ga);background:var(--gp);color:var(--gm);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Voir ce jour →</button>
+      </div>`;
+    l.appendChild(el);
+  }
+}
+function showWeek(n,btn){document.querySelectorAll('.wt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderPlanning(n);}
+function tpd(i){const d=document.getElementById('pd-'+i);const o=d.classList.contains('open');document.querySelectorAll('.ddet').forEach(x=>x.classList.remove('open'));if(!o)d.classList.add('open');}
+function goDay(i){curDay=i;showSc('today',document.getElementById('nb-today'));}
+
+// ═══════════ COURSES ═══════════
+function renderCourses(){
+  const l=document.getElementById('clist'); l.innerHTML='';
+  let tot=0,chk=0;
+  COURSES.forEach((cat,ci)=>{
+    const s=document.createElement('div');
+    let h=`<div class="cath"><span class="cdot" style="background:${cat.color}"></span>${cat.cat}</div>`;
+    cat.items.forEach((item,ii)=>{
+      tot++; const k=`${ci}-${ii}`; const c=S.courses[k]||false; if(c)chk++;
+      h+=`<div class="ci${c?' checked':''}" onclick="togC('${k}',this)"><div class="cck">${c?'✓':''}</div><div class="cname">${item.n}</div><div class="cqty">${item.q}</div></div>`;
+    });
+    s.innerHTML=h; l.appendChild(s);
+  });
+  document.getElementById('cco').textContent=`${chk} / ${tot} articles cochés`;
+}
+function togC(k,el){
+  S.courses[k]=!S.courses[k]; save();
+  el.classList.toggle('checked');
+  el.querySelector('.cck').textContent=S.courses[k]?'✓':'';
+  let tot=0,chk=0; COURSES.forEach((c,ci)=>c.items.forEach((_,ii)=>{tot++;if(S.courses[`${ci}-${ii}`])chk++;}));
+  document.getElementById('cco').textContent=`${chk} / ${tot} articles cochés`;
+}
+function resetCourses(){S.courses={};save();renderCourses();}
+function checkAllCourses(){COURSES.forEach((c,ci)=>c.items.forEach((_,ii)=>{S.courses[`${ci}-${ii}`]=true;}));save();renderCourses();}
+
+// ═══════════ PROGRESSION ═══════════
+const MSGS=[
+  ['🎉 Nouveau record !','Chaque gramme perdu est une victoire — continue !'],
+  ['💪 Tu avances !','Ta discipline paie — ton corps te dit merci !'],
+  ['🌟 Fantastique !','Regarde ta courbe — tu es clairement sur la bonne voie !'],
+  ['🔥 En feu !','Rien ne t\'arrête — fais-toi confiance !'],
+  ['🥇 Champion(ne) !','Chaque pesée te rapproche de ton objectif !'],
+  ['🌿 Bravo !','Ton engagement est impressionnant. La régularité fait tout !'],
+  ['😍 Incroyable !','Tu montres chaque jour que tu peux le faire !'],
+];
+function saveSetup(){
+  const st=parseFloat(document.getElementById('in-start').value);
+  const tg=parseFloat(document.getElementById('in-target').value);
+  if(!st||!tg||st<=tg){showNotif('⚠️ Vérifie les valeurs (départ > cible)');return;}
+  S.wStart=st; S.wTarget=tg;
+  if(!S.weights.length)S.weights.push({date:new Date().toISOString().split('T')[0],w:st});
+  save(); renderProg();
+}
+function updateSetup(){
+  const st=parseFloat(document.getElementById('ms-start').value);
+  const tg=parseFloat(document.getElementById('ms-target').value);
+  if(!st||!tg||st<=tg){showNotif('⚠️ Vérifie les valeurs');return;}
+  S.wStart=st; S.wTarget=tg; save(); renderProg();
+}
+function addWeight(){
+  const dt=document.getElementById('in-date').value;
+  const w=parseFloat(document.getElementById('in-w').value);
+  if(!dt||!w||w<30||w>300){showNotif('⚠️ Valeurs invalides');return;}
+  const prevMin=S.weights.length?Math.min(...S.weights.map(x=>x.w)):null;
+  const ex=S.weights.findIndex(x=>x.date===dt);
+  if(ex>=0)S.weights[ex].w=w; else S.weights.push({date:dt,w});
+  S.weights.sort((a,b)=>a.date.localeCompare(b.date));
+  save(); document.getElementById('in-w').value='';
+  if(prevMin!==null&&w<prevMin){
+    const lost=(S.wStart-w).toFixed(1);
+    const m=MSGS[Math.floor(Math.random()*MSGS.length)];
+    setTimeout(()=>showEnc(m[0]+` — ${lost} kg perdus !`,m[1]),400);
+  } else showNotif('✓ Pesée enregistrée !');
+  renderProg();
+}
+function delWeight(i){S.weights.splice(i,1);save();renderProg();}
+function renderProg(){
+  const has=S.wStart&&S.wTarget, hasMes=S.weights&&S.weights.length>0;
+  document.getElementById('setup-block').style.display=has?'none':'block';
+  ['pstats','gbar','wform','msetup','htitle'].forEach(id=>document.getElementById(id).style.display=has?'':'none');
+  document.getElementById('cwrap').style.display=(has&&S.weights.length>1)?'block':'none';
+  if(has){
+    document.getElementById('ms-start').value=S.wStart;
+    document.getElementById('ms-target').value=S.wTarget;
+    document.getElementById('in-date').value=new Date().toISOString().split('T')[0];
+    const last=hasMes?S.weights[S.weights.length-1].w:S.wStart;
+    const lost=+(S.wStart-last).toFixed(1);
+    const rem=+(last-S.wTarget).toFixed(1);
+    const pct=Math.min(100,Math.max(0,Math.round(lost/(S.wStart-S.wTarget)*100)));
+    const prev=S.weights.length>1?S.weights[S.weights.length-2].w:S.wStart;
+    const delta=+(last-prev).toFixed(1);
+    document.getElementById('sv-cur').textContent=last.toFixed(1)+' kg';
+    document.getElementById('sv-lost').textContent=(lost>0?'-':'')+Math.abs(lost)+' kg';
+    document.getElementById('sv-rem').textContent=rem>0?(rem.toFixed(1)+' kg'):'🎯 Atteint !';
+    const del=document.getElementById('sv-delta');
+    del.textContent=delta===0?'stable':(delta<0?delta+' kg':'+'+delta+' kg');
+    del.className='psd '+(delta<0?'g':(delta>0?'b':''));
+    document.getElementById('gbf').style.width=pct+'%';
+    document.getElementById('gl-start').textContent=S.wStart+' kg';
+    document.getElementById('gl-target').textContent=S.wTarget+' kg';
+    document.getElementById('gl-pct').textContent=pct+'%';
+    document.getElementById('phsub').textContent=`Départ : ${S.wStart} kg · Cible : ${S.wTarget} kg · ${pct}% atteint`;
+    if(S.weights.length>1)renderChart();
+    renderHist();
+  }
+}
+function renderChart(){
+  const ctx=document.getElementById('wChart').getContext('2d');
+  const labels=S.weights.map(x=>{const[y,m,d]=x.date.split('-');return `${d}/${m}`;});
+  const data=S.weights.map(x=>x.w);
+  const tgt=S.weights.map(()=>S.wTarget);
+  if(wChart)wChart.destroy();
+  wChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Poids',data,borderColor:'#4a9e4a',backgroundColor:'rgba(74,158,74,0.08)',borderWidth:2.5,pointBackgroundColor:'#4a9e4a',pointRadius:4,tension:0.35,fill:true},
+    {label:'Objectif',data:tgt,borderColor:'#e8a020',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{family:'DM Sans',size:11},color:'#5a7a5a',boxWidth:14,padding:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} kg`}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#5a7a5a'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'DM Sans',size:10},color:'#5a7a5a',callback:v=>v+'kg'},min:Math.floor(Math.min(S.wTarget,...data)-1),max:Math.ceil(Math.max(S.wStart,...data)+0.5)}}}});
+}
+function renderHist(){
+  const l=document.getElementById('hist'); l.innerHTML='';
+  const rev=[...S.weights].reverse();
+  rev.forEach((e,ri)=>{
+    const ri2=S.weights.length-1-ri;
+    const prev=ri2>0?S.weights[ri2-1].w:S.wStart;
+    const diff=+(e.w-prev).toFixed(1);
+    const ds=diff===0?'stable':(diff<0?diff+' kg':'+'+diff+' kg');
+    const dc=diff<0?'g':(diff>0?'b':'');
+    const[y,m,d]=e.date.split('-');
+    const el=document.createElement('div'); el.className='hitem';
+    el.innerHTML=`<div class="hidate">${d}/${m}/${y}</div><div class="hiw">${e.w.toFixed(1)} kg</div><div class="hid ${dc}">${ds}</div><button class="hidel" onclick="delWeight(${ri2})">×</button>`;
+    l.appendChild(el);
+  });
+  if(!rev.length)l.innerHTML='<div style="padding:0 0 16px;font-size:13px;color:var(--tm)">Aucune pesée. Ajoute ta première mesure ci-dessus.</div>';
+}
+
+// ═══════════ REMINDERS ═══════════
+function renderRemsUI(){
+  ['water','walk','weigh','bran'].forEach(k=>{
+    document.getElementById('tog-'+k).className='tog'+(S.rems[k]?' on':'');
+    document.getElementById('t-'+k).value=S.remT[k];
+  });
+}
+function toggleRem(k){S.rems[k]=!S.rems[k];save();renderRemsUI();if(S.rems[k])showNotif('🔔 Rappel activé !');}
+function saveRems(){['water','walk','weigh','bran'].forEach(k=>{S.remT[k]=document.getElementById('t-'+k).value;});save();}
+
+// ═══════════ TOASTS ═══════════
+function showNotif(msg){
+  const b=document.getElementById('notif-banner');
+  b.textContent=msg; b.classList.add('show');
+  clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),3200);
+}
+function showEnc(l1,l2){
+  const t=document.getElementById('enc-toast');
+  t.innerHTML=`<div style="font-size:15px;font-weight:500;margin-bottom:5px">${l1}</div><div style="font-size:13px;opacity:.85">${l2}</div>`;
+  t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),5500);
+}
+function checkRems(){
+  const now=new Date();
+  const hhmm=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const k='d'+curDay;
+  if(S.rems.water&&hhmm===S.remT.water&&(S.water[k]||0)<4)showNotif('💧 Rappel : pense à boire de l\'eau !');
+  if(S.rems.walk&&hhmm===S.remT.walk&&!S.walk[k])showNotif('🚶 Rappel : ta marche de 20 min t\'attend !');
+  if(S.rems.weigh&&hhmm===S.remT.weigh)showNotif('⚖️ Rappel : pense à te peser à jeun !');
+  if(S.rems.bran&&hhmm===S.remT.bran&&!S.bran[k])showNotif('🌾 Rappel : n\'oublie pas ton son d\'avoine !');
+}
+function autoReminders(){
+  const h=new Date().getHours(), k='d'+curDay;
+  if(h>=10&&h<13&&(S.water[k]||0)<2)setTimeout(()=>showNotif('💧 Pense à bien t\'hydrater !'),1800);
+  if(h>=17&&h<18&&!S.walk[k])setTimeout(()=>showNotif('🚶 As-tu fait ta marche de 20 min ?'),4000);
+  setInterval(checkRems,60000);
+}
+
+// ═══════════ PWA ═══════════
+let dp;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;document.getElementById('ibar').classList.remove('hidden');});
+function installApp(){if(dp){dp.prompt();dp.userChoice.then(()=>{dp=null;document.getElementById('ibar').classList.add('hidden');});}}
+window.addEventListener('appinstalled',()=>document.getElementById('ibar').classList.add('hidden'));
+
+// ═══════════ INIT ═══════════
+load();
+renderToday();
+renderPlanning(1);
+renderCourses();
+autoReminders();
+</script>
+</body>
+</html>
